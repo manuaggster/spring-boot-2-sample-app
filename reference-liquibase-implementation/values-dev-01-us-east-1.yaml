@@ -1,0 +1,75 @@
+# Default values for reference-liquibase-implementation-dev.
+# This is a YAML-formatted file.
+
+# namespace e.g. commerce, fulfillment
+namespace: enterprise
+# sub domain e.g. product, order, cart
+subdomainName: reference
+
+# Docker settings
+image:
+  # The name of your docker container
+  name: reference-liquibase-implementation
+  # Your docker container's tag
+  tag: latest
+  imagePullPolicy: Always
+
+# Change ports as per the application
+# default servicePort,containerPort for springboot is 8080
+# default containerPort for NGinx apps is 80
+service:
+  type: ClusterIP
+  servicePort: 8102
+  containerPort: 8102
+
+# Health Probe settings (use Kubernetes syntax)
+# https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+probes:
+  livenessProbe:
+    initialDelaySeconds: 60
+    periodSeconds: 3
+    httpGet:
+      path: /api/actuator/health
+      port: 8102
+  readinessProbe:
+    initialDelaySeconds: 60
+    timeoutSeconds: 60
+    periodSeconds: 10
+    httpGet:
+      path: /api/actuator/health
+      port: 8102
+
+# We usually recommend not to specify default resources and to leave this as a conscious choice for the user.
+resourceLimits:
+  resources:
+    limits:
+      cpu: "512m"
+      memory: "1024Mi"
+    requests:
+      cpu: "512m"
+      memory: "1024Mi"
+
+# Autoscaling of your service - the number of pod replicas to run for your service
+# minReplicas - Minimum number of replicas running when CPU use is minimal
+# maxReplicas - Maximum number of replicas running when CPU use peaks
+# targetCPUUtilizationPercentage - Percentage threshold when HPA begins scaling out pods
+autoscaling:
+  minReplicas: 1
+  maxReplicas: 1
+  targetCPUUtilizationPercentage: 85
+
+# Secrets Init container configuration
+pullSecrets:
+  enabled: false
+#  secretsToRead: REPLACE_WITH_SECRETS_ARN
+#  prefix: com.wawa
+
+# Environment variables that are auto injected into the container
+environmentVariables: []
+- name: "SPRING_DATASOURCE_URL"
+    value: "jdbc:postgresql://commerce-postgresql.postgres-ns.svc.cluster.local:5432/postgres"
+
+database:
+  postgreName: "postgres"
+  postgreHost: "commerce-postgresql.postgres-ns.svc.cluster.local"
+  postgrePort: 5432

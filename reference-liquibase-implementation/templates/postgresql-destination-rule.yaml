@@ -1,0 +1,12 @@
+{{- if (.Values.database) }}
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: {{ .Values.database.postgreName }}-destinationrule
+  namespace: {{ .Values.namespace }}
+spec:
+  host: {{ .Values.database.postgreHost }}
+  trafficPolicy:
+    tls:
+      mode: DISABLE
+{{- end }}

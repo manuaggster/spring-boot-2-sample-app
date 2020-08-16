@@ -1,0 +1,16 @@
+{{- if (.Values.database) }}
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: {{ .Values.database.postgreName }}-serviceentry
+  namespace: {{ .Values.namespace }}
+spec:
+  hosts:
+    - {{ .Values.database.postgreHost }}
+  ports:
+    - name: tcp
+      number: {{ .Values.database.postgrePort }}
+      protocol: TCP
+  location: MESH_EXTERNAL
+  resolution: DNS
+{{- end }} 

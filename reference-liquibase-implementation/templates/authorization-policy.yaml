@@ -1,0 +1,13 @@
+apiVersion: "security.istio.io/v1beta1"
+kind: "AuthorizationPolicy"
+metadata:
+  name: "{{ .Chart.Name }}-access"
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  rules:
+    - to:
+        - operation:
+            methods: ["GET"]
